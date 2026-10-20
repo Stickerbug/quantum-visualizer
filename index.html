@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>氢原子波函数 · 量子数不设限</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="app">
+  <aside class="panel" id="panel">
+    <div class="brand">
+      <div class="brand-mark">ψ</div>
+      <div class="brand-text">
+        <h1>氢原子波函数</h1>
+        <p>Hydrogen · unrestricted n l m</p>
+      </div>
+    </div>
+
+    <section class="card">
+      <h2><b>01</b>量子数<em>Quantum numbers</em></h2>
+      <div class="grid3">
+        <label class="field"><span>n</span><input id="in-n" type="number" inputmode="decimal" step="1" value="2"></label>
+        <label class="field"><span>l</span><input id="in-l" type="number" inputmode="decimal" step="1" value="1"></label>
+        <label class="field"><span>m</span><input id="in-m" type="number" inputmode="numeric" step="1" value="0"></label>
+      </div>
+      <label class="field"><span>Z <em>原子序数</em></span><input id="in-z" type="number" inputmode="decimal" step="1" min="1" value="1"></label>
+      <div class="presets" id="presets"></div>
+      <p class="hint">n 可为分数或负数，l 任意非负实数，m 为整数且可大于 l；非物理组合按解析延拓计算，并注明原因。</p>
+    </section>
+
+    <section class="card">
+      <h2><b>02</b>显示<em>Display</em></h2>
+      <div class="seg" id="mode-seg" role="tablist">
+        <button type="button" data-mode="cloud" class="on">3D 点云</button>
+        <button type="button" data-mode="slice">截面切片</button>
+      </div>
+
+      <div id="cloud-opts">
+        <label class="field"><span>采样点数</span>
+          <select id="in-points">
+            <option value="100000">100 000</option>
+            <option value="250000" selected>250 000</option>
+            <option value="500000">500 000</option>
+            <option value="1000000">1 000 000</option>
+          </select>
+        </label>
+        <label class="field"><span>点大小 <b id="v-size">2.6</b></span>
+          <input id="in-size" type="range" min="0.6" max="14" step="0.1" value="2.6">
+        </label>
+        <label class="toggle"><input id="in-complex" type="checkbox"><span>复轨道 · 相位着色</span></label>
+        <label class="toggle"><input id="in-rotate" type="checkbox" checked><span>自动旋转</span></label>
+      </div>
+
+      <div id="slice-opts" hidden>
+        <label class="field"><span>切片位置 y <b id="v-y">0.00</b></span>
+          <input id="in-y" type="range" min="-1" max="1" step="0.01" value="0">
+        </label>
+        <label class="field"><span>色阶动态范围</span>
+          <select id="in-decades">
+            <option value="9">9 个数量级</option>
+            <option value="6" selected>6 个数量级</option>
+            <option value="12">12 个数量级</option>
+            <option value="15">15 个数量级</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="field"><span>截断半径 r<sub>max</sub> 倍率 <b id="v-r">1.00×</b></span>
+        <input id="in-rmax" type="range" min="0.25" max="3" step="0.05" value="1">
+      </label>
+      <label class="toggle"><input id="in-axes" type="checkbox"><span>坐标轴 <em>x 红 · y 绿 · z 蓝</em></span></label>
+    </section>
+
+    <section class="card status" id="status-card">
+      <h2><b>03</b>状态<em>Status</em></h2>
+      <div class="status-head">
+        <span class="badge" id="badge">物理态</span>
+        <span class="status-title" id="status-title">n=2, l=1, m=0</span>
+      </div>
+      <ul class="reasons" id="reasons"></ul>
+      <ul class="reasons warn" id="warnings"></ul>
+      <p class="meta" id="meta"></p>
+    </section>
+
+    <p class="foot">纯静态页面 · 无外部依赖 · 无需服务器</p>
+  </aside>
+
+  <main class="stage" id="stage">
+    <canvas id="gl"></canvas>
+    <div class="hud hud-tl">
+      <div class="hud-title" id="hud-title">ψ<sub>2,1,0</sub></div>
+      <div class="hud-sub" id="hud-sub"></div>
+      <div class="hud-warn" id="hud-warn" hidden></div>
+    </div>
+    <div class="hud hud-tr">
+      <div class="stat"><span>制表</span><b id="st-build">—</b></div>
+      <div class="stat"><span>采样</span><b id="st-sample">—</b></div>
+      <div class="stat"><span>FPS</span><b id="st-fps">—</b></div>
+      <div class="stat"><span>视野半径</span><b id="st-view">—</b></div>
+    </div>
+    <div class="hud hud-bc toast" id="toast"></div>
+    <div class="hud hud-br hintline" id="hintline">拖拽旋转 · 滚轮缩放 · 双击复位</div>
+    <button type="button" class="panel-btn" id="btn-panel" aria-label="展开控制面板">☰</button>
+  </main>
+</div>
+
+<div class="fatal" id="fatal" hidden>
+  <h2>无法启动渲染器</h2>
+  <p id="fatal-msg"></p>
+  <p class="fatal-hint">本页需要支持 WebGL2 的浏览器（Chrome / Edge / Firefox / Safari 15+）。</p>
+</div>
+
+<script src="js/special.js"></script>
+<script src="js/atom.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/renderer2d.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
