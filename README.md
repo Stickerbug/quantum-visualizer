@@ -4,7 +4,8 @@
 
 常规工具把 `n ≥ 1`、`0 ≤ l ≤ n−1`、`|m| ≤ l` 写死在输入控件里；本工具把这些约束打开：**n 可为分数或负数，l 可为任意非负实数，m 为整数且允许 |m| > l**，并通过截断归一化把非物理解画出来，同时在界面上逐条说明它为什么非物理。
 
-在线访问：[quantum.stickerbug.top](quantum.stickerbug.top)
+访问在线演示：[quantum.stickerbug.top](https://quantum.stickerbug.top)
+
 ![2p_z 轨道](screenshot.png)
 
 ## 运行与部署
